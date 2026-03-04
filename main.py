@@ -23,7 +23,7 @@ def main() -> None:
         sys.exit(0)
 
 
-def tcp_client():
+def tcp_client() -> None:
     s = None
     try:
         print("TCP client started (type quit or q to exit)")
@@ -35,10 +35,10 @@ def tcp_client():
 
         connection_closed = threading.Event()
         reader_thread = threading.Thread(
-            target=reader, args=(s, connection_closed), daemon=True
+            name="reader", target=reader, args=(s, connection_closed), daemon=True
         )
         sender_thread = threading.Thread(
-            target=sender, args=(s, connection_closed), daemon=True
+            name="sender", target=sender, args=(s, connection_closed), daemon=True
         )
         reader_thread.start()
         sender_thread.start()
