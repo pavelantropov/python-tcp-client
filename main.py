@@ -85,7 +85,7 @@ def connect(address: str, port: int) -> socket.socket | None:
     return None
 
 
-def sender(s: socket.socket, connection_closed: threading.Event) -> None:
+def sender(sock: socket.socket, connection_closed: threading.Event) -> None:
     try:
         while not connection_closed.is_set():
             msg = input("[CLIENT] Enter message: ")
@@ -96,7 +96,7 @@ def sender(s: socket.socket, connection_closed: threading.Event) -> None:
                 print("[CLIENT] Disconnecting...")
                 return
 
-            s.sendall((msg + "\n").encode("utf-8"))
+            sock.sendall((msg + "\n").encode("utf-8"))
 
     except socket.timeout:
         print("[CLIENT] Error: Server timeout")
@@ -104,13 +104,13 @@ def sender(s: socket.socket, connection_closed: threading.Event) -> None:
         connection_closed.set()
 
 
-def reader(s: socket.socket, connection_closed: threading.Event) -> None:
+def reader(sock: socket.socket, connection_closed: threading.Event) -> None:
     buffer = ""
 
     try:
         while not connection_closed.is_set():
             try:
-                data = s.recv(1024)
+                data = sock.recv(BUFFER_SIZE)
             except socket.timeout:
                 continue
 
@@ -127,17 +127,17 @@ def reader(s: socket.socket, connection_closed: threading.Event) -> None:
         connection_closed.set()
 
 
-def close_socket(s: socket.socket | None) -> None:
-    if s is None:
+def close_socket(sock: socket.socket | None) -> None:
+    if sock is None:
         return
 
     try:
-        s.shutdown(socket.SHUT_RDWR)
+        sock.shutdown(socket.SHUT_RDWR)
     except Exception:
         pass
 
     try:
-        s.close()
+        sock.close()
     except Exception:
         pass
 
