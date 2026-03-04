@@ -34,17 +34,17 @@ def tcp_client():
             return
 
         connection_closed = threading.Event()
-        readerThread = threading.Thread(
+        reader_thread = threading.Thread(
             target=reader, args=(s, connection_closed), daemon=True
         )
-        senderThread = threading.Thread(
+        sender_thread = threading.Thread(
             target=sender, args=(s, connection_closed), daemon=True
         )
-        readerThread.start()
-        senderThread.start()
+        reader_thread.start()
+        sender_thread.start()
 
-        readerThread.join()
-        senderThread.join()
+        reader_thread.join()
+        sender_thread.join()
 
     except (BrokenPipeError, ConnectionResetError):
         print("[CLIENT] Connection lost")
